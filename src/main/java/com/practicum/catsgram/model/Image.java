@@ -1,4 +1,4 @@
-package com.practicum.model;
+package com.practicum.catsgram.model;
 
 import lombok.Data;
 
