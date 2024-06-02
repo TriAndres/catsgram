@@ -3,22 +3,28 @@ package com.practicum.catsgram.service;
 import com.practicum.catsgram.exeption.ConditionsNotMetException;
 import com.practicum.catsgram.exeption.NotFondException;
 import com.practicum.catsgram.model.Post;
+import com.practicum.catsgram.model.SortOrder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
     private final UserService userService;
     private final Map<Long, Post> posts = new HashMap<>();
+    private final Comparator<Post> postDateComporator = Comparator.comparing(Post::getPostDate);
 
-    public Collection<Post> findAll() {
-        return posts.values();
+    public Collection<Post> findAll(SortOrder sort, int from, int size) {
+        return posts.values()
+                .stream()
+                .sorted(sort.equals(SortOrder.ASCENDING)?
+                        postDateComporator : postDateComporator.reversed())
+                .skip(from)
+                .limit(size)
+                .toList();
     }
 
     public Post create(Post post) {
@@ -49,6 +55,10 @@ public class PostService {
         throw new NotFondException("Пост с id = " + newPost.getId() + " не найдун");
     }
 
+    public Optional<Post> findById(long postId) {
+        return Optional.ofNullable(posts.get(postId));
+    }
+
     private long getNextId() {
         long currentMaxId = posts.keySet()
                 .stream()
@@ -57,4 +67,6 @@ public class PostService {
                 .orElse(0);
         return ++currentMaxId;
     }
+
+
 }
