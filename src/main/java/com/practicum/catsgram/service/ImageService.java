@@ -31,6 +31,7 @@ public class ImageService {
     public List<Image> saveImages(long postId, List<MultipartFile> files) {
         return files.stream().map(file -> saveImage(postId, file)).collect(Collectors.toList());
     }
+
     public Image saveImage(long postId, MultipartFile file) {
         Post post = postService.findById(postId)
                 .orElseThrow(() -> new ConditionsNotMetException("Указаный пост не найден"));
@@ -85,7 +86,7 @@ public class ImageService {
                 return Files.readAllBytes(path);
             } catch (IOException e) {
                 throw new ImageFileException("Ошибка чтения файла. Id: " + image.getId()
-                + ", name: " + image.getOriginalFileName());
+                        + ", name: " + image.getOriginalFileName());
             }
         } else {
             throw new ImageFileException("Ффйл не найден. Id: " + image.getId()
