@@ -8,8 +8,8 @@ import java.time.Instant;
 @Data
 @EqualsAndHashCode(of = "id")
 public class Post {
-    private long id;
-    private long authorId;
+    private Long id;
+    private Long authorId;
     private String description;
     private Instant postData;
 }
