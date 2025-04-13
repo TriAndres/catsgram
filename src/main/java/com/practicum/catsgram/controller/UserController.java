@@ -1,17 +1,13 @@
 package com.practicum.catsgram.controller;
 
-import com.practicum.catsgram.exception.ConditionsNotMetException;
-import com.practicum.catsgram.exception.DuplicatedDateException;
-import com.practicum.catsgram.exception.NotFondException;
 import com.practicum.catsgram.model.User;
 import com.practicum.catsgram.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -24,7 +20,13 @@ public class UserController {
         return userService.findAll();
     }
 
+    @GetMapping("/{userId}")
+    public Optional<User> findById(@PathVariable long userId) {
+        return userService.findById(userId);
+    }
+
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public User create(@RequestBody User user) {
         return userService.create(user);
     }

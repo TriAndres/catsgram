@@ -2,8 +2,9 @@ package com.practicum.catsgram.service;
 
 import com.practicum.catsgram.exception.ConditionsNotMetException;
 import com.practicum.catsgram.exception.DuplicatedDateException;
-import com.practicum.catsgram.exception.NotFondException;
+import com.practicum.catsgram.exception.NotFoundException;
 import com.practicum.catsgram.model.User;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,17 +15,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
+@Service
 public class UserService {
     private final Map<Long, User> users = new HashMap<>();
 
-    @GetMapping
     public Collection<User> findAll() {
         return users.values();
     }
 
-    @PostMapping
-    public User create(@RequestBody User user) {
+    public User create(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             throw new ConditionsNotMetException("Имейл должен быть указан");
         }
@@ -37,8 +36,7 @@ public class UserService {
         return user;
     }
 
-    @PutMapping
-    public User update(@RequestBody User newUser) {
+    public User update(User newUser) {
         if (newUser.getId() == null) {
             throw new ConditionsNotMetException("Id должен быть указан");
         }
@@ -56,7 +54,7 @@ public class UserService {
             }
             return oldUser;
         }
-        throw new NotFondException("Пользователь с id = " + newUser.getId() + " не найден");
+        throw new NotFoundException("Пользователь с id = " + newUser.getId() + " не найден");
     }
 
     public Optional<User> findById(long authorId) {
