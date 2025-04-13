@@ -1,8 +1,9 @@
 package com.practicum.catsgram.service;
 
 import com.practicum.catsgram.exception.ConditionsNotMetException;
-import com.practicum.catsgram.exception.NotFondException;
+import com.practicum.catsgram.exception.NotFoundException;
 import com.practicum.catsgram.model.Post;
+import com.practicum.catsgram.model.SortOrder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,19 +12,24 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
     private final UserService userService;
     private final Map<Long, Post> posts = new HashMap<>();
+    private final Comparator<Post> postDateComparator = Comparator.comparing(Post::getPostData);
 
     @GetMapping
-    public Collection<Post> findAll() {
-        return posts.values();
+    public Collection<Post> findAll(SortOrder sort, int from, int size) {
+        return posts.values()
+                .stream()
+                .sorted(sort.equals(SortOrder.ASCENDING) ?
+                        postDateComparator : postDateComparator.reversed())
+                .skip(from)
+                .limit(size)
+                .toList();
     }
 
     @PostMapping
@@ -53,7 +59,11 @@ public class PostService {
             oldPost.setDescription(newPost.getDescription());
             return oldPost;
         }
-        throw new NotFondException("Пост с id = " + newPost.getId() + " не найден");
+        throw new NotFoundException("Пост с id = " + newPost.getId() + " не найден");
+    }
+
+    public Optional<Post> findById(long postId) {
+        return Optional.ofNullable(posts.get(postId));
     }
 
     private long getNextId() {
@@ -64,4 +74,6 @@ public class PostService {
                 .orElse(0);
         return ++currentMaxId;
     }
+
+
 }
