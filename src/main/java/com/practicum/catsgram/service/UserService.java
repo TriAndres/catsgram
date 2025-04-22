@@ -1,20 +1,17 @@
 package com.practicum.catsgram.service;
 
 import com.practicum.catsgram.exception.ConditionsNotMetException;
-import com.practicum.catsgram.exception.DuplicatedDateException;
+import com.practicum.catsgram.exception.DuplicatedDataException;
 import com.practicum.catsgram.exception.NotFoundException;
 import com.practicum.catsgram.model.User;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
 @Service
 public class UserService {
     private final Map<Long, User> users = new HashMap<>();
@@ -28,7 +25,7 @@ public class UserService {
             throw new ConditionsNotMetException("Имейл должен быть указан");
         }
         if (users.containsValue(user)) {
-            throw new DuplicatedDateException("Данный имейл уже используется");
+            throw new DuplicatedDataException("Данный имейл уже используется");
         }
         user.setId(getNextId());
         user.setRegistration(Instant.now());
